@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace StatisticsApp
 {
-	class Hitter
+	public class Hitter
 	{
 		#region Members
 

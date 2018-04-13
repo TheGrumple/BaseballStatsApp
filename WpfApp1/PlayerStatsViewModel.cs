@@ -5,6 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Xml;
+using System.Xml.Serialization;
+using System.IO;
 
 namespace StatisticsApp
 {
@@ -13,10 +16,11 @@ namespace StatisticsApp
 		#region Members
 
 		private int m_hits;
+		public string m_path = "E:\\WpfApp1\\TestSerializerFolder";
 		public int m_earnedRuns;
 		public float m_inningsPitched;
 		private float m_result;
-		private List<Hitter> m_hitters = new List<Hitter>();
+		public List<Hitter> m_hitters = new List<Hitter>();
 		private DelegateCommand m_commandOne;
 		private DelegateCommand m_commandTwo;
 		private float m_onBasePercentage;
@@ -35,6 +39,9 @@ namespace StatisticsApp
 		private float m_runsCreated;
 		private float m_runsCreatedStolenBases;
 		private float m_runsCreatedTechnical;
+		XmlSerializer Serializer = new XmlSerializer(typeof(List<Hitter>));
+		FileStream fs = new FileStream("E:\\WpfApp1\\TestSerializerFolder\\Test.xml", FileMode.Create);
+		StreamWriter Writer = new StreamWriter("Test.xml");
 
 		#endregion
 
@@ -46,7 +53,7 @@ namespace StatisticsApp
 			m_inningsPitched = 38.1f;
 			m_hitters.Add(new Hitter() { Assists = 3, AtBats = 100, CaughtStealing = 3, Doubles = 44, FlyBalls = 70, GroundBalls = 20, GroundedIntoDoublePlay = 4, HitByPitch = 2, Hits = 100, HomeRuns = 13, IntentionalWalksDrawns = 3, Name = "Eric", PlateAppearances = 125, Position = "Shortstop", PutOuts = 32, ReachBaseOnError = 5, RunsScored = 77, SacBunts = 9, SacFlies = 12, Singles = 45, StolenBases = 60, Triples = 8, WalksDrawn = 23});
 			m_commandOne = new DelegateCommand(() => EarnedRunAverage(4, 9.0f));
-			m_commandTwo = new DelegateCommand(() => ComputeStatistics());
+			m_commandTwo = new DelegateCommand(() => SerializerTest());
 		}
 
 		public ICommand Command1 => m_commandOne;
@@ -206,6 +213,13 @@ namespace StatisticsApp
 			var runsCreatedTechnical = ((Hits + WalksDrawn - CaughtStealing + HitByPitch - GroundedIntoDoublePlay) * (TotalBases + (.26f * (WalksDrawn - IntentionalWalksDrawn + HitByPitch)))) + (.52f * ( SacBunts + SacFlies + StolenBases))/ (AtBats + WalksDrawn + HitByPitch + SacBunts + SacFlies);
 			m_runsCreatedTechnical = runsCreatedTechnical;
 			return runsCreatedTechnical;
+		}
+
+		public void SerializerTest()
+		{
+			Serializer.Serialize(Writer, m_hitters);
+			Writer.Close();
+			//Guid.NewGuid().ToString();
 		}
 
 		#endregion
